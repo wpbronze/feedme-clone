@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { AlertCircleIcon, XIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -15,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
+import { saveArticle } from "@/features/saved-articles/articles";
+import { createClient } from "@/lib/supabase/client";
 
 import type { ConvertedPage } from "./convert";
 import {
@@ -51,6 +54,8 @@ export function Converter() {
   const [selected, setSelected] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState("");
   const [notice, setNotice] = useState("");
+  const [needLogin, setNeedLogin] = useState(false);
+  const [saving, setSaving] = useState(false);
   const requestId = useRef(0);
 
   const page = status.kind === "done" ? status.page : null;
@@ -59,6 +64,7 @@ export function Converter() {
   async function convert() {
     const id = ++requestId.current;
     setNotice("");
+    setNeedLogin(false);
     const value = url.trim();
     if (!value) {
       return setStatus({ kind: "error", message: "URL을 입력해 주세요." });
@@ -99,6 +105,29 @@ export function Converter() {
     setSelected(null);
     setCustomPrompt("");
     setNotice("");
+    setNeedLogin(false);
+  }
+
+  async function save() {
+    if (!page) return;
+    setNotice("");
+    setNeedLogin(false);
+    setSaving(true);
+    try {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getClaims();
+      if (!data?.claims) return setNeedLogin(true);
+      const result = await saveArticle(supabase, page);
+      setNotice(
+        result.ok
+          ? "저장했습니다. 저장 목록에서 다시 볼 수 있습니다."
+          : result.message,
+      );
+    } catch {
+      setNotice("저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function copyMarkdown() {
@@ -221,6 +250,14 @@ export function Converter() {
               <h2 className="text-sm font-semibold">내보내기</h2>
               <div className="grid grid-cols-2 gap-2">
                 <Button
+                  variant="secondary"
+                  className="col-span-2"
+                  disabled={noResult || saving}
+                  onClick={() => void save()}
+                >
+                  저장
+                </Button>
+                <Button
                   variant="outline"
                   disabled={noResult}
                   onClick={() => void copyMarkdown()}
@@ -243,6 +280,17 @@ export function Converter() {
                   Claude로 열기
                 </Button>
               </div>
+              {needLogin && (
+                <p role="status" className="rounded-lg bg-muted px-3 py-2 text-sm">
+                  로그인하면 저장할 수 있습니다.{" "}
+                  <Link
+                    href="/auth/login"
+                    className="underline underline-offset-4"
+                  >
+                    로그인
+                  </Link>
+                </p>
+              )}
               {notice && (
                 <p role="status" className="rounded-lg bg-muted px-3 py-2 text-sm">
                   {notice}

@@ -8,12 +8,18 @@ export async function AuthLink() {
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims);
 
+  const linkClass = "text-sm underline-offset-4 hover:underline";
+
   return (
-    <Link
-      href={signedIn ? "/settings" : "/auth/login"}
-      className="text-sm underline-offset-4 hover:underline"
-    >
-      {signedIn ? "설정" : "로그인"}
-    </Link>
+    <>
+      {signedIn && (
+        <Link href="/saved" className={linkClass}>
+          저장 목록
+        </Link>
+      )}
+      <Link href={signedIn ? "/settings" : "/auth/login"} className={linkClass}>
+        {signedIn ? "설정" : "로그인"}
+      </Link>
+    </>
   );
 }

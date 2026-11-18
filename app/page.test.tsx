@@ -7,6 +7,9 @@ vi.mock("next-themes", () => ({
   useTheme: () => ({ resolvedTheme: "light", setTheme: vi.fn() }),
 }));
 
+// AuthLink is an async server component that reads the Supabase session.
+vi.mock("@/features/auth/auth-link", () => ({ AuthLink: () => null }));
+
 test("첫 화면은 입력창과 비활성 내보내기 버튼을 보여준다", () => {
   render(<Home />);
 

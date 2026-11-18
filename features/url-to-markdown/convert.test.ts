@@ -45,6 +45,12 @@ describe("convertUrl", () => {
     expect(page.markdown).toContain("**bold**");
   });
 
+  it("저장에 쓸 원본 주소를 함께 돌려준다", async () => {
+    mockFetch(ARTICLE);
+    const page = await convertUrl(" https://example.com/post ");
+    expect(page.url).toBe("https://example.com/post");
+  });
+
   it("저자가 없으면 빈 문자열이다", async () => {
     mockFetch(ARTICLE.replace(/<meta name="author"[^>]*>/, ""));
     expect((await convertUrl("https://example.com/post")).author).toBe("");

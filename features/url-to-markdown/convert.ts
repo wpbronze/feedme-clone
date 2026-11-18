@@ -2,6 +2,7 @@ import { Defuddle } from "defuddle/node";
 import { parseHTML } from "linkedom";
 
 export type ConvertedPage = {
+  url: string;
   title: string;
   author: string;
   site: string;
@@ -71,6 +72,7 @@ export async function convertUrl(input: string): Promise<ConvertedPage> {
   if (!markdown) throw new ConvertError("extract");
 
   return {
+    url: url.href,
     title: result.title?.trim() ?? "",
     author: result.author?.trim() ?? "",
     site: result.site?.trim() || url.hostname,

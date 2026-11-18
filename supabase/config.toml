@@ -3,8 +3,11 @@
 project_id = "feedme-clone"
 
 [auth]
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/**"]
+site_url = "https://feedme-clone-pied-psi.vercel.app"
+additional_redirect_urls = [
+  "https://feedme-clone-pied-psi.vercel.app/**",
+  "http://localhost:3000/**",
+]
 
 [auth.email]
 # Course setup: email confirmation is off so sign-up signs the user in at once.

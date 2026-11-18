@@ -1,0 +1,11 @@
+# Only the settings this project manages are declared here.
+# `supabase config push` leaves every undeclared property unchanged.
+project_id = "feedme-clone"
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+
+[auth.email]
+# Course setup: email confirmation is off so sign-up signs the user in at once.
+enable_confirmations = false

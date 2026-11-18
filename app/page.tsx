@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AuthLink } from "@/features/auth/auth-link";
 import { Converter } from "@/features/url-to-markdown/converter";
 import { ThemeToggle } from "@/features/url-to-markdown/theme-toggle";
 
@@ -15,12 +15,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href="/settings"
-            className="text-sm underline-offset-4 hover:underline"
-          >
-            설정
-          </Link>
+          <AuthLink />
           <ThemeToggle />
         </div>
       </header>
